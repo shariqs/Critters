@@ -1,33 +1,32 @@
-//Configuration
+//Food Configuration
+var FOOD_SIZE = 10;
+var FOOD_QUANTITY = 10;
+
+//Critter Configuration
 var CRITTER_QUANTITY = 15;
 var CRITTER_STARTING_MASS = 60;
-var FOOD_QUANTITY = 10;
-var FOOD_SIZE = 10;
 var CRITTER_COUNTER = 0;
-var DECAY_SPEED = 0.5;
-
+var CRITTER_DECAY_SPEED = 0.25;
 var CRITTER_AVG_RANGE = 4;
 var CRITTER_AVG_EATSPEED = 2;
 var CRITTER_AVG_ACCSPEED = 0.5;
 var CRITTER_AVG_MAXSPEED = 2;
-
 var CRITTER_RANGE_DEVIATION = 2;
 var CRITTER_EATSPEED_DEVIATION = 0.5;
 var CRITTER_DECAY_DEVIATION = 0.5;
 var CRITTER_ACCSPEED_DEVIATION = 0.5;
 var CRITTER_MAXSPEED_DEVIATION = 0.5;
 
+//Predator Configuration    
+var PREDATOR_STARTING_MASS = 60;
 var PREDATOR_AVG_ACCSPEED = 1;
 var PREDATOR_AVG_MAXSPEED = 4;
-var PREDATOR_COUNTER;
-
+var PREDATOR_COUNTER = 0;
 
 //Setup
-
-size(500,500);
+size(750,750);
 fill(0,0,0);
 rectMode(CENTER);
-
 
 
 //Create Critters
@@ -41,13 +40,11 @@ var Critter = function(){
     this.mass = CRITTER_STARTING_MASS;
     CRITTER_COUNTER++;
     
-    this.range =    CRITTER_AVG_RANGE    + (randomGaussian() * CRITTER_RANGE_DEVIATION);
+    this.range    = CRITTER_AVG_RANGE    + (randomGaussian() * CRITTER_RANGE_DEVIATION);
     this.eatSpeed = CRITTER_AVG_EATSPEED + (randomGaussian() * CRITTER_EATSPEED_DEVIATION);
     this.accSpeed = CRITTER_AVG_ACCSPEED + (randomGaussian() * CRITTER_ACCSPEED_DEVIATION);
     this.maxSpeed = CRITTER_AVG_MAXSPEED + (randomGaussian() * CRITTER_MAXSPEED_DEVIATION);
-    
-    this.decay = DECAY_SPEED;    
-    
+
     Critter.prototype.draw = function(){
         this.update();
         stroke(0,0,0);
@@ -61,7 +58,7 @@ var Critter = function(){
     };
     
     Critter.prototype.update = function(){
-        this.mass -= this.decay;
+        this.mass -= CRITTER_DECAY_SPEED;
         if(this.mass <= 0){ this.die(); }
         if(this.target == null){    this.getTarget(); }
         if(this.status == 0){   this.moveToFood();  }
@@ -125,7 +122,6 @@ var Critter = function(){
         CRITTER_AVG_MAXSPEED = sumMaxSpeed/critListLength;
         critterList[dyingCritter] = new Critter();
     }
-    
 };
 
 var Predator = function(){
@@ -134,14 +130,14 @@ var Predator = function(){
     this.acc = new PVector();
     this.target = null;
     this.status = 0;  // 0 = Looking for Food   |   1 = Eating Food 
-    this.generation = CRITTER_COUNTER;
-    this.mass = CRITTER_STARTING_MASS;
+    this.generation = PREDATOR_COUNTER;
+    this.mass = PREDATOR_STARTING_MASS;
     PREDATOR_COUNTER++;
     
 
-    this.eatSpeed = CRITTER_AVG_EATSPEED + (randomGaussian() * CRITTER_EATSPEED_DEVIATION);
-    this.accSpeed = CRITTER_AVG_ACCSPEED + (randomGaussian() * CRITTER_ACCSPEED_DEVIATION);
-    this.maxSpeed = CRITTER_AVG_MA
+    this.eatSpeed = PREDATOR_AVG_EATSPEED + (randomGaussian() * PREDATOR_EATSPEED_DEVIATION);
+    this.accSpeed = PREDATOR_AVG_ACCSPEED + (randomGaussian() * PREDATOR_ACCSPEED_DEVIATION);
+    this.maxSpeed = PREDATOR_AVG_MAXSPEED + (randomGaussian() * PREDATOR_MAXSPEED_DEVIATION);
     
 }
 
@@ -174,18 +170,13 @@ var bubbleSortCritters = function(input[]){
            swapped = true;
        }
     }
-   
  if(swapped){ bubbleSortCritters(input);}
-    
 }
 
 var swap = function(var first, var second, input[]){
     var holdFirst = input[first];
-
     input[first] = input[second];
     input[second] = holdFirst;
-    
-    
 }
 
 
@@ -216,7 +207,7 @@ void draw(){
     body.append("<tr'><th>Rank</th><th>Mass</th><th>Range</th><th>Eat Speed</th><th>Acc Speed</th><th>Max Speed</th><th>Gen</th></tr>");
     for(var i = 0; i < critterList.length;i++){
        
-        body.append("<tr'><td>" + i 
+        body.append("<tr'><td>" + (i+1) 
                        + "</td><td>" + Math.round(critterList[i].mass)
                        + "</td><td>" + Math.round(critterList[i].range) 
                        + "</td><td>" + Math.round(critterList[i].eatSpeed)
@@ -235,7 +226,7 @@ void draw(){
                        + "</th><th>" + Math.round(CRITTER_AVG_MAXSPEED)
                        + "</th><th>" + " "
                        + "</tr>"); 
-                       
+      
     background(200,200,190);
     for(var i = 0; i < width; i+=20){
        stroke(150,150,150);
